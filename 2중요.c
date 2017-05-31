@@ -55,9 +55,6 @@ int main()
 		for(int j=0;j<N;j++)
 			map[0][i][j]=' ';
 	mapscan();
-	for(int i=0;i<N;i++){
-		for(int j=0;j<N;j++)
-			printf("%c", map[0][i][j]);
-		printf("\n");	
-	}
+	mapprint();
+
 	return 0;}
