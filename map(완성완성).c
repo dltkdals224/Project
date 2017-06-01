@@ -108,3 +108,4 @@ int main()
 	mapprint5();
 	return 0;
 }
+//이거를 이렇게 함수 5개로하면 좀 그런가요?
