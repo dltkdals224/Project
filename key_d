@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+char key;
+scanf("c",&key);
+
+void key_d();
+int main(void)
+{
+
+}
+
+//key_d 함수
+void key_d()
+{
+if (key=='d')
+printf("h(왼쪽), j(아래), k(위), l(오른쪽)\n
+u(undo)\n
+r(replay)\n
+n(new)\n
+e(exit)\n
+s(save)\n
+f(file load)\n
+d(display help)\n
+t(top)")
+return 0;
+}
