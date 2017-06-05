@@ -37,46 +37,70 @@ int scanchar(){
 			}
 	return 0;
 }
+
+int arrange(){
+
+        static int a,b;        
+	static int arrange[0][N][N];
+
+        for(int y=0;y<N;y++)
+		for(int x=0;x<N;x++)
+			if(map[0][y][x]=='O'){
+				a=x;
+				b=y;
+	                         
+			}
+	return 0;
+}
+
 void keyMove(){
 	int key;
 	scanchar();
 	key=getch();
 
 	system("clear");
-
-	for(int y=0;y<N;y++)
-		for(int x=0;x<N;x++)
-			if(map[0][y][x]=='O')
-				if(map[0][y][x]=='@'){
-					map[0][y][x]='@'}
-				else if(map[0][y][x]=='$'){
-					map[0][y][x]='$'}
-				else if(map[0][y][x]=='O'){
-		                        map[0][y][x]='O'} //보관함 위치에 다른거오면 다른거 찍히게, 아무것도 없으면 보관함 찍히게 하고싶었는데 이거아닌듯..ㅜㅜ
-
-
+	
 
 	switch(key){
 		case 'h':
 			if(map[0][y][x-1] == '$'){
 				if(map[0][y][x-2] == ' '){
-					map[0][y][x-2]='$';
-					map[0][y][x]=' ';
-					map[0][y][x-=1]='@';
+					if(arrange[0][y][x]=='O')
+						map[0][y][x]='O';
+					        map[0][y][x-2]='$';
+						map[0][y][x-=1]='@';
+					else
+						map[0][y][x-2]='$';
+					        map[0][y][x]=' ';
+					        map[0][y][x-=1]='@';
 				}
 				else if(map[0][y][x-2] == 'O'){
-					map[0][y][x-2]='$';
-					map[0][y][x]=' ';
-					map[0][y][x-=1]='@';
+					if(arrange[0][y][x]=='O')
+						map[0][y][x]='O';
+					        map[0][y][x-2]='$';
+						map[0][y][x-=1]='@';
+					else
+						map[0][y][x-2]='$';
+					        map[0][y][x]=' ';
+					        map[0][y][x-=1]='@';
 				}
 			}
 			else if(map[0][y][x-1] == 'O'){
-				map[0][y][x]=' '; //이부분 'O'이었는데 이상해서 ' '로 바꿨는데 맞지?밑에 3개도 그렇게 바꿔씀
-				map[0][y][x-=1]='@';
+				if(arrange[0][y][x]=='O')
+					map[0][y][x]='O';
+					map[0][y][x-=1]='@';
+			        else
+					map[0][y][x-=1]='@';
+			                map[0][y][x]=' '; 	
 			}
+
 			else if(map[0][y][x-1] == ' '){
-				map[0][y][x]=' '; 
-				map[0][y][x-=1]='@';
+				if(arrange[0][y][x]=='O')
+					map[0][y][x]='O';
+				        map[0][y][x-=1]='@';
+				else
+					map[0][y][x]=' '; 
+				        map[0][y][x-=1]='@';
 			}
 			break;
 		
@@ -94,7 +118,7 @@ void keyMove(){
 				}
 			}
 			else if(map[0][y+1][x] == 'O'){
-				map[0][y][x]=' ';
+				map[0][y][x]='O';
 				map[0][y+=1][x]='@';
 			}
 			else if(map[0][y+1][x] == ' '){
@@ -117,7 +141,7 @@ void keyMove(){
 				}
 			}
 			else if(map[0][y-1][x] == 'O'){
-				map[0][y][x]=' ';
+				map[0][y][x]='O';
 				map[0][y-=1][x]='@';
 			}
 			else if(map[0][y-1][x] == ' '){
@@ -140,7 +164,7 @@ void keyMove(){
 				}
 			}
 			else if(map[0][y][x+1] == 'O'){
-				map[0][y][x]=' ';
+				map[0][y][x]='O';
 				map[0][y][x+=1]='@';
 			}
 			else if(map[0][y][x+1] == ' '){
