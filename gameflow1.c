@@ -8,7 +8,9 @@ int map[5][N][N];//전역 변수
 int name[10]; //이름받을때 쓰는거
 int p_map[30][30];
 int x,y;
+int arrange[0][N][N];
 int getch()
+	
 {
 	int ch;
 
@@ -38,10 +40,9 @@ int scanchar(){
 	return 0;
 }
 
-int arrange(){
+void arr(){
 
         static int a,b;        
-	static int arrange[0][N][N];
 
         for(int y=0;y<N;y++)
 		for(int x=0;x<N;x++)
@@ -50,13 +51,13 @@ int arrange(){
 				b=y;
 	                         
 			}
-	return 0;
 }
 
 void keyMove(){
 	int key;
 	scanchar();
 	key=getch();
+	arr();
 
 	system("clear");
 	
@@ -66,19 +67,19 @@ void keyMove(){
 			if(map[0][y][x-1] == '$'){
 				if(map[0][y][x-2] == ' '){
 					if(arrange[0][y][x]=='O')
-						map[0][y][x]='O';
+					       {map[0][y][x]='O';
 					        map[0][y][x-2]='$';
-						map[0][y][x-=1]='@';
+						map[0][y][x-=1]='@';}
 					else
 						map[0][y][x-2]='$';
 					        map[0][y][x]=' ';
 					        map[0][y][x-=1]='@';
 				}
 				else if(map[0][y][x-2] == 'O'){
-					if(arrange[0][y][x]=='O')
+					if(arrange[0][y][x]=='O'){
 						map[0][y][x]='O';
 					        map[0][y][x-2]='$';
-						map[0][y][x-=1]='@';
+						map[0][y][x-=1]='@';}
 					else
 						map[0][y][x-2]='$';
 					        map[0][y][x]=' ';
@@ -86,18 +87,18 @@ void keyMove(){
 				}
 			}
 			else if(map[0][y][x-1] == 'O'){
-				if(arrange[0][y][x]=='O')
+				if(arrange[0][y][x]=='O'){
 					map[0][y][x]='O';
-					map[0][y][x-=1]='@';
+					map[0][y][x-=1]='@';}
 			        else
 					map[0][y][x-=1]='@';
 			                map[0][y][x]=' '; 	
 			}
 
 			else if(map[0][y][x-1] == ' '){
-				if(arrange[0][y][x]=='O')
+				if(arrange[0][y][x]=='O'){
 					map[0][y][x]='O';
-				        map[0][y][x-=1]='@';
+				        map[0][y][x-=1]='@';}
 				else
 					map[0][y][x]=' '; 
 				        map[0][y][x-=1]='@';
@@ -107,45 +108,92 @@ void keyMove(){
 		case 'j':
 			if(map[0][y+1][x] == '$'){
 				if(map[0][y+2][x] == ' '){
+
+				
+					if(arrange[0][y][x]=='O')
+					       {map[0][y][x]='O';
+					        map[0][y+2][x]='$';
+						map[0][y+=1][x]='@';}
+					else
 					map[0][y+2][x]='$';
 					map[0][y][x]=' ';
 					map[0][y+=1][x]='@';
 				}
 				else if(map[0][y+2][x] == 'O'){
+
+					if(arrange[0][y][x]=='O'){
+						map[0][y][x]='O';
+					        map[0][y+2][x]='$';
+						map[0][y+=1][x]='@';}
+					else
 					map[0][y+2][x]='$';
 					map[0][y][x]=' ';
 					map[0][y+=1][x]='@';
 				}
 			}
 			else if(map[0][y+1][x] == 'O'){
-				map[0][y][x]='O';
-				map[0][y+=1][x]='@';
+
+				if(arrange[0][y][x]=='O'){
+					map[0][y][x]='O';
+					map[0][y+=1][x]='@';}
+			        else
+					map[0][y+=1][x]='@';
+				        map[0][y][x]=' ';
+				
 			}
-			else if(map[0][y+1][x] == ' '){
-				map[0][y][x]=' ';
-				map[0][y+=1][x]='@';
+			else if(map[0][y+1][x] == ' ')
+			{
+				if(arrange[0][y][x]=='O'){
+					map[0][y][x]='O';
+				        map[0][y+=1][x]='@';}
+				else
+					map[0][y][x]=' '; 
+				        map[0][y+=1][x]='@';
 			}
 			break;
 
 		case 'k':
 			if(map[0][y-1][x] == '$'){
 				if(map[0][y-2][x] == ' '){
+
+					if(arrange[0][y][x]=='O')
+					       {map[0][y][x]='O';
+					        map[0][y-=2][x]='$';
+						map[0][y-=1][x]='@';}
+					else                       
 					map[0][y-2][x]='$';
 					map[0][y][x]=' ';
 					map[0][y-=1][x]='@';
 				}
 				else if(map[0][y-2][x] == 'O'){
+
+					if(arrange[0][y][x]=='O'){
+						map[0][y][x]='O';
+					        map[0][y-2][x]='$';
+						map[0][y-=1][x]='@';}
+					else
 					map[0][y-2][x]='$';
 					map[0][y][x]=' ';
 					map[0][y-=1][x]='@';
 				}
 			}
 			else if(map[0][y-1][x] == 'O'){
-				map[0][y][x]='O';
-				map[0][y-=1][x]='@';
+
+				if(arrange[0][y][x]=='O'){
+					map[0][y][x]='O';
+					map[0][y-=1][x]='@';}
+			        else
+					map[0][y-=1][x]='@';
+				map[0][y][x]=' ';
+				
 			}
 			else if(map[0][y-1][x] == ' '){
-				map[0][y][x]=' ';
+
+				if(arrange[0][y][x]=='O'){
+					map[0][y][x]='O';
+				        map[0][y-=1][x]='@';}
+				else
+					map[0][y][x]=' '; 
 				map[0][y-=1][x]='@';
 			}
 			break;
@@ -153,23 +201,46 @@ void keyMove(){
 		case 'l':
 			if(map[0][y][x+1] == '$'){
 				if(map[0][y][x+2] == ' '){
+
+					if(arrange[0][y][x]=='O')
+					       {map[0][y][x]='O';
+					        map[0][y][x+2]='$';
+						map[0][y][x+=1]='@';}
+					else
 					map[0][y][x+2]='$';
 					map[0][y][x]=' ';
 					map[0][y][x+=1]='@';
 				}
 				else if(map[0][y][x+2] == 'O'){
+
+					if(arrange[0][y][x]=='O'){
+						map[0][y][x]='O';
+					        map[0][y][x+2]='$';
+						map[0][y][x+=1]='@';}
+					else
 					map[0][y][x+2]='$';
 					map[0][y][x]=' ';
 					map[0][y][x+=1]='@';
 				}
 			}
 			else if(map[0][y][x+1] == 'O'){
-				map[0][y][x]='O';
-				map[0][y][x+=1]='@';
+
+				if(arrange[0][y][x]=='O'){
+					map[0][y][x]='O';
+					map[0][y][x+=1]='@';}
+			        else
+					map[0][y][x+=1]='@';
+				        map[0][y][x]=' ';
+			
 			}
 			else if(map[0][y][x+1] == ' '){
-				map[0][y][x]=' ';
-				map[0][y][x+=1]='@';
+
+				if(arrange[0][y][x]=='O'){
+					map[0][y][x]='O';
+				        map[0][y][x+=1]='@';}
+				else
+					map[0][y][x]=' '; 
+				        map[0][y][x+=1]='@';
 			}
 			break;
 	}
