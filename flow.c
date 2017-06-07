@@ -9,6 +9,8 @@ int map[5][N][N];//전역변수
 int name[10]; //이름받을때 쓰는거
 int p_map[30][30];
 int x=0, y=0, z=0, i;
+_Bool whole_game =1;
+
 void get_name()
 {
     char name[M] = "";
@@ -80,7 +82,6 @@ int mapscan()
 			;
 	}
 	fclose(scan);
-	return 0;
 }
 
 int mapprint1()
@@ -264,15 +265,197 @@ void keyMove()
 
 int main(void)
 {
-    get_name();
-	system("clear");
-	printf("\n\n"); //get_name 함수호출 후 clear 실행했는데 "Hello 이름"이 찍힌다...
+    double d_diff1, d_diff2, d_diff3, d_diff4, d_diff5, d_diff_all;
+    
+	while(whole_game){
+		_Bool game1=1, game2=1, game3=1, game4=1, game5=1;
+	    time_t start_time, end_time;
+	    double difftime(end_time, start_time);
+	    
+		get_name();
+	    system("clear");
+	    printf("\n\n");
 
-	mapscan();
-	mapprint1();
-	while(1){
-		keyMove();
+	    mapscan();
+	    
 		mapprint1();
+	    while(game1){
+		    int rank_1[5];
+		    int tmp, i, j;
+		
+		    while(1){
+		    time(&start_time);
+		
+		    keyMove();
+		    mapprint1();
+
+		    break; //게임을 완료할 조건 입력
+			}
+		    time(&end_time);
+	 	    d_diff1 = difftime(end_time, start_time);
+        
+		    if(rank_1[4]<d_diff1)
+		        rank_1[4] = d_diff1;
+        
+		    for(i=0; i<4; i++)
+                for(j=4; j>i; j--)
+                    if(rank_1[j-1]>rank_1[j]){
+                        tmp = rank_1[j-1];
+                        rank_1[j-1]= rank_1[j];
+                        rank_1[j]=tmp;
+					}
+		
+		    FILE *out;
+		    out = fopen("ranking", "w");
+		    for(i=0; i<5; i++)
+			    fprintf(out, "%d\n", rank_1[i]);
+		    fclose(out);
+		    return 0;
+		}
+		start_time =0;
+        end_time=0;
+
+        mapprint2();
+        while(game2){
+            int num_2[5];
+		    int tmp, i, j;
+		
+		    while(1){
+            time(&start_time);
+
+            keyMove();
+            mapprint2();
+
+            break; //게임을 완료할 조건 입력
+			}
+            time(&end_time);
+            d_diff2 = difftime(end_time, start_time);
+		
+		    if(num_2[4]<d_diff2)
+                num_2[4] = d_diff2;
+            for(i=0; i<4; i++)
+                for(j=4; j>i; j--)
+                    if(num_2[j-1]>num_2[j]){
+                        tmp = num_2[j-1];
+                        num_2[j-1]= num_2[j];
+                        num_2[j]=tmp;
+					}
+			FILE *out;
+            out = fopen("ranking", "w");
+            for(i=0; i<5; i++)
+                fprintf(out, "%d\n", num_2[i]);
+            fclose(out);
+            return 0;
+		}
+        start_time =0;
+        end_time=0;
+
+	    mapprint3();
+        while(game3){
+            int num_3[5];
+		    int tmp, i, j;
+		 
+		    while(1){
+            time(&start_time);
+
+            keyMove();
+            mapprint3();
+
+            break; //게임을 완료할 조건 입력
+			}
+            time(&end_time);
+            d_diff3 = difftime(end_time, start_time);
+		  
+		    if(num_3[4]<d_diff3)
+                num_3[4] = d_diff3;
+            for(i=0; i<4; i++)
+                for(j=4; j>i; j--)
+                    if(num_3[j-1]>num_3[j]){
+                        tmp = num_3[j-1];
+                        num_3[j-1]= num_3[j];
+                        num_3[j]=tmp;
+					}
+            FILE *out;
+            out = fopen("ranking", "w");
+            for(i=0; i<5; i++)
+                fprintf(out, "%d\n", num_3[i]);
+            fclose(out);
+            return 0;
+		}
+        start_time =0;
+        end_time=0;
+
+	    mapprint4();
+	    while(game4){
+		    int num_4[5];
+		    int tmp, i, j;
+		 
+		    while(1){
+			time(&start_time);
+
+            keyMove();
+            mapprint4();
+
+            break; //게임을 완료할 조건 입력
+			}
+            time(&end_time);
+            d_diff4 = difftime(end_time, start_time);
+		   
+		    if(num_4[4]<d_diff4)
+                num_4[4] = d_diff4;
+            for(i=0; i<4; i++)
+                for(j=4; j>i; j--)
+                    if(num_4[j-1]>num_4[j]){
+                        tmp = num_4[j-1];
+                        num_4[j-1]= num_4[j];
+                        num_4[j]=tmp;
+					}
+            FILE *out;
+            out = fopen("ranking", "w");
+            for(i=0; i<5; i++)
+                fprintf(out, "%d\n", num_4[i]);
+            fclose(out);
+            return 0;
+		}
+        start_time =0;
+        end_time=0;
+
+	    mapprint5();
+	    while(game5){
+		    int num_5[5];
+		    int tmp, i, j;
+		 
+		    while(1){
+			time(&start_time);
+
+ 			keyMove();
+            mapprint5();
+
+            break; //게임을 완료할 조건 입력
+			}
+            time(&end_time);
+            d_diff5 = difftime(end_time, start_time);
+			
+			if(num_5[4]<d_diff5)
+                num_5[4] = d_diff5;
+            for(i=0; i<4; i++)
+                for(j=4; j>i; j--)
+                    if(num_5[j-1]>num_5[j]){
+                        tmp = num_5[j-1];
+                        num_5[j-1]= num_5[j];
+                        num_5[j]=tmp;
+					}
+            FILE *out;
+            out = fopen("ranking", "w");
+            for(i=0; i<5; i++)
+                fprintf(out, "%d\n", num_5[i]);
+            fclose(out);
+            return 0;
+		}
+        start_time =0;
+        end_time=0;
 	}
+    d_diff_all = d_diff1 + d_diff2 + d_diff3 + d_diff4 + d_diff5; //전체 게임 실행 시간 계산
+	printf("축하메세지 출력");
 	return 0;
 }
