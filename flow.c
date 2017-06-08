@@ -9,7 +9,10 @@ int map[5][N][N];//전역변수
 int name[10]; //이름받을때 쓰는거
 int p_map[30][30];
 int x=0, y=0, z=0, i;
-_Bool whole_game =1;
+_Bool game1=1, game2=1, game3=1, game4=1, game5=1, whole_game =1;
+double d_diff1, d_diff2, d_diff3, d_diff4, d_diff5, d_diff_all;
+time_t start_time, end_time;
+double difftime(end_time, start_time);
 
 void get_name()
 {
@@ -263,23 +266,9 @@ void keyMove()
 	}
 }
 
-int main(void)
+void map1()
 {
-    double d_diff1, d_diff2, d_diff3, d_diff4, d_diff5, d_diff_all;
-    
-	while(whole_game){
-		_Bool game1=1, game2=1, game3=1, game4=1, game5=1;
-	    time_t start_time, end_time;
-	    double difftime(end_time, start_time);
-	    
-		get_name();
-	    system("clear");
-	    printf("\n\n");
-
-	    mapscan();
-	    
-		mapprint1();
-	    while(game1){
+	while(game1){
 		    int rank_1[5];
 		    int tmp, i, j;
 		
@@ -310,16 +299,17 @@ int main(void)
 		    for(i=0; i<5; i++)
 			    fprintf(out, "%d\n", rank_1[i]);
 		    fclose(out);
-		    return 0;
 		}
 		start_time =0;
         end_time=0;
+}
 
-        mapprint2();
-        while(game2){
+void map2()
+{
+	while(game2){
             int num_2[5];
 		    int tmp, i, j;
-		
+
 		    while(1){
             time(&start_time);
 
@@ -330,7 +320,7 @@ int main(void)
 			}
             time(&end_time);
             d_diff2 = difftime(end_time, start_time);
-		
+
 		    if(num_2[4]<d_diff2)
                 num_2[4] = d_diff2;
             for(i=0; i<4; i++)
@@ -345,16 +335,16 @@ int main(void)
             for(i=0; i<5; i++)
                 fprintf(out, "%d\n", num_2[i]);
             fclose(out);
-            return 0;
 		}
         start_time =0;
         end_time=0;
-
-	    mapprint3();
-        while(game3){
+}
+void map3()
+{
+	while(game3){
             int num_3[5];
 		    int tmp, i, j;
-		 
+
 		    while(1){
             time(&start_time);
 
@@ -365,7 +355,7 @@ int main(void)
 			}
             time(&end_time);
             d_diff3 = difftime(end_time, start_time);
-		  
+
 		    if(num_3[4]<d_diff3)
                 num_3[4] = d_diff3;
             for(i=0; i<4; i++)
@@ -380,16 +370,16 @@ int main(void)
             for(i=0; i<5; i++)
                 fprintf(out, "%d\n", num_3[i]);
             fclose(out);
-            return 0;
 		}
         start_time =0;
         end_time=0;
-
-	    mapprint4();
-	    while(game4){
+}
+void map4()
+{
+	while(game4){
 		    int num_4[5];
 		    int tmp, i, j;
-		 
+
 		    while(1){
 			time(&start_time);
 
@@ -400,7 +390,7 @@ int main(void)
 			}
             time(&end_time);
             d_diff4 = difftime(end_time, start_time);
-		   
+
 		    if(num_4[4]<d_diff4)
                 num_4[4] = d_diff4;
             for(i=0; i<4; i++)
@@ -415,16 +405,16 @@ int main(void)
             for(i=0; i<5; i++)
                 fprintf(out, "%d\n", num_4[i]);
             fclose(out);
-            return 0;
 		}
         start_time =0;
         end_time=0;
-
-	    mapprint5();
-	    while(game5){
+}
+void map5()
+{
+	while(game5){
 		    int num_5[5];
 		    int tmp, i, j;
-		 
+
 		    while(1){
 			time(&start_time);
 
@@ -435,7 +425,7 @@ int main(void)
 			}
             time(&end_time);
             d_diff5 = difftime(end_time, start_time);
-			
+
 			if(num_5[4]<d_diff5)
                 num_5[4] = d_diff5;
             for(i=0; i<4; i++)
@@ -450,12 +440,54 @@ int main(void)
             for(i=0; i<5; i++)
                 fprintf(out, "%d\n", num_5[i]);
             fclose(out);
-            return 0;
 		}
         start_time =0;
         end_time=0;
+}
+
+void rank_game()
+{
+	 int num_game[5];
+	 int tmp, i, j;
+	 
+	 d_diff_all = d_diff1 + d_diff2 + d_diff3 + d_diff4 + d_diff5;
+
+     if(num_game[4]<d_diff_all)
+         num_game[4] = d_diff_all;
+     for(i=0; i<4; i++)
+         for(j=4; j>i; j--)
+             if(num_game[j-1]>num_game[j]){
+                 tmp = num_game[j-1];
+                 num_game[j-1]= num_game[j];
+                 num_game[j]=tmp;
+             }
+}
+
+
+int main(void)
+{
+	while(whole_game){
+		get_name();
+	    system("clear");
+	    printf("\n\n");
+
+	    mapscan();
+	    
+		mapprint1();
+	    map1();
+
+        mapprint2();
+        map2();
+
+	    mapprint3();
+        map3();
+	    
+		mapprint4();
+	    map4();
+
+	    mapprint5();
 	}
-    d_diff_all = d_diff1 + d_diff2 + d_diff3 + d_diff4 + d_diff5; //전체 게임 실행 시간 계산
-	printf("축하메세지 출력");
+    rank_game();
+    printf("축하메세지 출력");
 	return 0;
 }
