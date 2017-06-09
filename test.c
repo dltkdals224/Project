@@ -6,18 +6,28 @@
 #define N 30
 #define M 11
 
+void keymove();
+void undo_scan();
+void undo_do();
+void file_load();
 void stage_check();
 void search_hole();
 void file_save();
+void end();
+
+//void rank();
+//void load_rank();
 
 int replay_check = 0; //0은 시작 x , 1은 시작 o
-int undo[5][N][N];
+char undo_memory[5][N][N];
 char map_memory[5][N][N];
 char map[5][N][N];//전역변수
 char name[10]; //이름받을때 쓰는거
+char record_name[N][10];
 char p_map[30][30];
 int x=0, y=0, z=0, i;
 time_t start_time, end_time;
+double d_diff_stop=0;
 char key; // r,n,e 포함 나머지 입력 값들도 이 key변수로 받을 것.
 
 //이름 입력받는 함수
@@ -40,23 +50,26 @@ void get_name()
 		}
 		name[i++] = a;
 	}
+	//name[N][10] = name; <- ranking에 필요
 	system("clear");
 	printf("\n");
 }
 
-//현재위치 찾는 함수?
+//현재위치 찾는 함수?(@)
 int scanchar()
 {
-	for(int i=0;i<N;i++)
-		for(int j=0;j<N;j++)
-			if(map[0][i][j]=='@'){
-				x=j;
-				y=i;
+	for(int i=0;i<N;i++){
+		for(int j=0;j<N;j++){
+			if(map[z][i][j]=='@'){
+				x = j;
+				y = i;
+				return 0;
 			}
-	return 0;
+		}
+	}
 }
 
-//map.txt파일 스캔하는 함수(완성)
+//map.txt파일 스캔해서 map[z][y][x]에 저장해놓는 함수(완성)
 int mapscan()
 {
 	FILE *scan;
@@ -95,85 +108,55 @@ int mapscan()
 		else
 			;
 	}
+	z=0;
 	fclose(scan);
 	return 0;
 }
 
+//undo 스캔 해놓기.
 void undo_scan()
 {
 	for(int y=0; y<N; y++)
-	for(int x=0; x<N; x++){
-		undo[4][y][x]= undo[3][y][x];
-		undo[3][y][x]= undo[2][y][x];
-		undo[2][y][x]= undo[1][y][x];
-		undo[1][y][x]= undo[0][y][x];
-		undo[0][y][x]= map[z][y][x];
-	}
+		for(int x=0; x<N; x++){
+			undo_memory[4][y][x]= undo_memory[3][y][x];
+			undo_memory[3][y][x]= undo_memory[2][y][x];
+			undo_memory[2][y][x]= undo_memory[1][y][x];
+			undo_memory[1][y][x]= undo_memory[0][y][x];
+			undo_memory[0][y][x]= map[z][y][x];
+		}
 }
 
-////// map출력 함수(거의 완성)
-int mapprint1()
+//undo 프린트.
+void undo_do()
 {
-	int x,y,z=0;
+	int u = 0;
+
+	if(u==5)
+	return;
+
+	for(int y=0; y<N; y++)
+		for(int x=0; x<N; x++){
+			map[z][y][x] = undo_memory[0][y][x];
+			undo_memory[0][y][x] = undo_memory[1][y][x];
+			undo_memory[1][y][x] = undo_memory[2][y][x];
+			undo_memory[2][y][x] = undo_memory[3][y][x];
+			undo_memory[3][y][x] = undo_memory[4][y][x];
+		}
+		u++;
+
+}
+
+//mapprint 하나로 합쳐놈?
+void mapprint()
+{
+	int x,y;
 	printf("Hello %s", name);
 	printf("\n\n");
+	printf("map%d\n",z+1);
 	for(int y=0;y<N;y++){
 		for(int x=0;x<N;x++)
 			printf("%c",map[z][y][x]);
-	}
-	//다하면 mapprint2로 넘어가는 조건.
-	return 0;
-}
-
-int mapprint2()
-{
-	int x,y,z=1;
-	printf("Hello %s", name);
-	printf("\n\n");
-	for(int y=0;y<N;y++){
-		for(int x=0;x<N;x++)
-			printf("%c",map[z][y][x]);
-	}
-	//다하면 mapprint3로 넘어가는 조건.
-	return 0;
-}
-
-int mapprint3()
-{
-	int x,y,z=2;
-	printf("Hello %s", name);
-	printf("\n\n");
-	for(int y=0;y<N;y++){
-		for(int x=0;x<N;x++)
-			printf("%c",map[z][y][x]);
-	}
-	//다하면 mapprint4로 넘어가는 조건.
-	return 0;
-}
-
-int mapprint4()
-{
-	int x,y,z=3;
-	printf("Hello %s", name);
-	printf("\n\n");
-	for(int y=0;y<N;y++){
-		for(int x=0;x<N;x++)
-			printf("%c",map[z][y][x]);
-	}
-	//다하면 mapprint5로 넘어가는 조건.
-	return 0;
-}
-
-int mapprint5()
-{
-	int x,y,z=4;
-	printf("Hello %s", name);
-	printf("\n\n");
-	for(int y=0;y<N;y++){
-		for(int x=0;x<N;x++)
-			printf("%c",map[z][y][x]);
-	}
-	return 0;
+		}
 }
 
 ////// ??
@@ -210,86 +193,107 @@ void keyMove()
 
 	switch(key){
 
-		case 'u': //undo 미완성.
+		case 'u':
+
+			undo_do();
+			break;
+
 
 		case 'r':
-			{
+
 			if(z==0)
 			{
-				for(int y=0; y<N; y++)
-					for(int x=0; x<N; x++)
-					map[0][y][x] = map_memory[0][y][x];
-			mapprint1();
+				for(int b=0; b<N; b++)
+					for(int a=0; a<N; a++)
+					map[0][b][a] = map_memory[0][b][a];
+					z=0;
+			mapprint();
 			}
 
 			if(z==1)
 			{
-				for(int y=0; y<N; y++)
-					for(int x=0; x<N; x++)
-					map[1][y][x] = map_memory[1][y][x];
-			mapprint2();
+				for(int b=0; b<N; b++)
+					for(int a=0; a<N; a++)
+					map[1][b][a] = map_memory[1][b][a];
+					z=1;
+			mapprint();
 			}
 
 			if(z==2)
 			{
-				for(int y=0; y<N; y++)
-					for(int x=0; x<N; x++)
-					map[2][y][x] = map_memory[2][y][x];
-			mapprint3();
+				for(int b=0; b<N; b++)
+					for(int a=0; a<N; a++)
+					map[2][b][a] = map_memory[2][b][a];
+					z=2;
+			mapprint();
 			}
 
 			if(z==3)
 			{
-				for(int y=0; y<N; y++)
-					for(int x=0; x<N; x++)
-					map[3][y][x] = map_memory[3][y][x];
-			mapprint4();
+				for(int b=0; b<N; b++)
+					for(int a=0; a<N; a++)
+					map[3][b][a] = map_memory[3][b][a];
+					z=3;
+			mapprint();
 			}
 
 			if(z==4)
 			{
-				for(int y=0; y<N; y++)
-					for(int x=0; x<N; x++)
-					map[4][y][x] = map_memory[4][y][x];
-			mapprint5();
+				for(int b=0; b<N; b++)
+					for(int a=0; a<N; a++)
+					map[4][b][a] = map_memory[4][b][a];
+					z=4;
+			mapprint();
 			}
 
 			break;
-			}
+
 
 		case 'n':
-		{
+
 		system("clear");
 		start_time =0;
-		for(int z=0; z<5; z++)
-			for(int y=0; y<N; y++)
-				for(int x=0; x<N; x++)
-					map[z][y][x] = map_memory[z][y][x];
+		for(int c=0; c<5; c++)
+			for(int b=0; b<N; b++)
+				for(int a=0; a<N; a++)
+					map[c][b][a] = map_memory[c][b][a];
 
-		mapprint1();
+		mapprint();
 		time(&start_time);
 		break;
-		}
+
 
 		case 'e':
-		{
+
 			file_save();
+			system("clear");
+
+			printf("\n\n");
+			printf("SEE YOU %s. . . .",name);
+			printf("\n");
 			exit(-1);
 			break;
-		}
+
 
 		case 's':
-		{
+
 			file_save();
 			break;
-		}
 
-		case 'f': //
 
-		case 't': //ranking
+		case 'f':
+
+			file_load();
+			break;
+
+
+		case 't':
+
+			//load_rank();
+			break;
+
 
 		case 'd':
-		{
 		system("clear");
 		printf("h(왼쪽), j(아래), k(위), l(오른쪽)\n");
 		printf("u(undo) \n");
@@ -306,13 +310,12 @@ void keyMove()
 		scanchar();
 		key2=getch();
 
-		if(key2=='q'){
+		if(key2=='q')
 			system("clear");
 		break;
-		}
-		}
 
 		case 'h':
+		undo_scan();
 			if(map[z][y][x-1] == '$'){
 				if(map[z][y][x-2] == ' '){
 					map[z][y][x-2]='$';
@@ -336,6 +339,7 @@ void keyMove()
 			break;
 
 		case 'j':
+		undo_scan();
 			if(map[z][y+1][x] == '$'){
 				if(map[z][y+2][x] == ' '){
 					map[z][y+2][x]='$';
@@ -359,6 +363,7 @@ void keyMove()
 			break;
 
 		case 'k':
+		undo_scan();
 			if(map[z][y-1][x] == '$'){
 				if(map[z][y-2][x] == ' '){
 					map[z][y-2][x]='$';
@@ -382,6 +387,7 @@ void keyMove()
 			break;
 
 		case 'l':
+		undo_scan();
 			if(map[z][y][x+1] == '$'){
 				if(map[z][y][x+2] == ' '){
 					map[z][y][x+2]='$';
@@ -407,7 +413,7 @@ void keyMove()
 }
 
 //////파일 저장하기(미완성)
-void file_save()
+void file_save() //game_file_save로 변경
 {
 	time_t stop_time;
 	time(&stop_time);
@@ -417,39 +423,65 @@ void file_save()
 	FILE *file_save;
 	file_save=fopen("sokoban.txt","w");
 
-	fprintf(file_save,"%s",name);  //이름
+	fprintf(file_save,"%s",name);  //이름 저장
 	fprintf(file_save," ");
 
-	fprintf(file_save,"%.1f",d_diff_stop); //시간
+	fprintf(file_save,"%.1f",d_diff_stop);  //시간 저장
 	fprintf(file_save,"\n");
-
-	fprintf(file_save,"%c",z);//맵 stage
-	fprintf(file_save,"\n");
-
-	for(int y=0;y<30;y++)
-		for(int x=0;x<30;x++)
-			fprintf(file_save,"%c",map[z][y][x]); //맵
-
+	fprintf(file_save,"map %d\n",z+1);
+//맵 저장
+if(z==0)
+	for(int b=0;b<30;b++)
+		for(int a=0;a<30;a++)
+			fprintf(file_save,"%c",map[0][b][a]);
+if(z==1)
+	for(int b=0;b<30;b++)
+		for(int a=0;a<30;a++)
+			fprintf(file_save,"%c",map[1][b][a]);
+if(z==2)
+	for(int b=0;b<30;b++)
+		for(int a=0;a<30;a++)
+			fprintf(file_save,"%c",map[2][b][a]);
+if(z==3)
+	for(int b=0;b<30;b++)
+		for(int a=0;a<30;a++)
+			fprintf(file_save,"%c",map[3][b][a]);
+if(z==4)
+	for(int b=0;b<30;b++)
+		for(int a=0;a<30;a++)
+			fprintf(file_save,"%c",map[4][b][a]);
 	fclose(file_save);
 }
 
 
 //////저장한 파일 불러오기(미완성)
-void file_load()
+void file_load() //game_file_load로 변경
 {
-	FILE *file_save;
-	file_save=fopen("sokoban.txt","r");
-	double d_diff_stop;
-	char space;
-	for(int z=0;z<30;z++)
+	FILE *record_load;
+	record_load=fopen("sokoban.txt","r");
+
+	char tmp;
+	start_time = 0;
+	time(&start_time);
+
+	fscanf(record_load,"%s",name);
+	fscanf(record_load,"%c",&tmp);
+
+	fscanf(record_load,"%f",&d_diff_stop);
+	fscanf(record_load,"%c",&tmp);
+
+	fscanf(record_load,"map%d",&z);
+	z--;
+	fscanf(record_load,"%c",&tmp);
+	for(int z=0;z<5;z++)
 		for(int y=0;y<30;y++)
 			for(int x=0;x<30;x++)
-				fscanf(file_save,"%c",&map[z][y][x]);
+				fscanf(record_load,"%c",&map[z][y][x]);
 
-	fscanf(file_save,"%s %.1f", name, d_diff_stop);
+	fclose(record_load);
 
-	fscanf(file_save,"%c",map[z][y][x]);
-	fclose(file_save);
+	stage_check();
+	search_hole();
 }
 
 int memory() //초기 맵 상태 저장
@@ -460,37 +492,37 @@ int memory() //초기 맵 상태 저장
 			for(int x=0; x<N; x++)
 			map_memory[z][y][x] = map[z][y][x];
 		}
-		x=0,y=0,z=0;
+
 }
 
 //////main 함수.
 int main(void)
 {
 	get_name();
-	memory();
 	mapscan();
-	mapprint1();
+	//mapprint();
+	//scanchar();
 	time(&start_time);
-
+	//search_hole();
+	memory();
 	while(1){
-
 		replay_check = 1 ; //움직임을 입력.
-
+		mapprint();
 		keyMove();
-		search_hole();
-		mapprint1();
+
+
 		search_hole();
 		stage_check();
 		//if (보관함 개수 == 0)
-		//while(1) keyMove(),mapprint2()
+		//while(1) keyMove()
 
 		//~반복
-
 	}
 	time(&end_time);
 	//double difftime(end_time, start_time);
-	double d_diff = difftime(end_time, start_time);
-
+	double d_diff = d_diff_stop + difftime(end_time, start_time);
+	//rank()
+	end();
 	return 0;
 }
 
@@ -502,32 +534,19 @@ int main(void)
 //save, load
 //ranking -> 옵션 t
 
+//구멍 메우는 함수
 void search_hole()
 {
-	for(int z=0;z<5;z++)
 		for(int y=0;y<N;y++)
 			for(int x=0;x<N;x++)
 			{
 				if (map_memory[z][y][x]=='O')
 					if (map[z][y][x]==' ')
-					map[z][y][x]='O';
+						map[z][y][x]='O';
 			}
 }
 
-
-void next_stage()
-{
-	if (z==0)
-	mapprint2();
-	if (z==1)
-	mapprint3();
-	if (z==2)
-	mapprint4();
-	if (z==3)
-	mapprint5();
-}
-
-
+//stage완료 조건을 확인하는 함수
 void stage_check()
 {
 	int i=0;//필요개수 충족위해 필요 변수
@@ -535,17 +554,28 @@ void stage_check()
 
 		for(int y=0;y<N;y++)
 			for(int x=0;x<N;x++)
-			if(map_memory[0][y][x]=='O')
+			if(map_memory[z][y][x]=='O')
 			o++;
 
 		for(int y=0;y<N;y++)
 			for(int x=0;x<N;x++)
 			{
-				if (map_memory[0][y][x]=='O')
-				 if (map[0][y][x]=='$')
+				if (map_memory[z][y][x]=='O')
+				 if (map[z][y][x]=='$')
 				 i++;
-
 			}
-				if(i==o)
-				next_stage();//이자리에 next stage만들어서 다음으로.
+		if(i==o){
+			z++;
+		}
+				//next_stage();//이자리에 next stage만들어서 다음으로.
+}
+
+//끝나는 함수.
+void end()
+{
+	system("clear");
+
+	printf("\n\n");
+	printf("SEE YOU %s. . . .",name);
+	printf("\n");
 }
