@@ -6,18 +6,32 @@
 #define N 30
 #define M 11
 
-void keymove();
-void undo_scan();
-void undo_do();
-void file_load();
-void stage_check();
-void search_hole();
-void file_save();
-void end();
+
+int scanchar(); // @(창고지기)의 위치 찾는 함수.
+
+int mapscan(); // map.txt파일을 삼차원 배열 map[z][y][x]에 저장하는 함수.
+int mapmemory(); // 움직이지 않았을 때 map 상태를 저장해놓는 함수.(r과n에 필요)
+
+int getch(); // 한문자씩 받게 해주는 함수.
+void get_name(); // 이름 입력받는 함수.
+void mapprint(); // mapscan으로 저장한 배열을 출력하는 함수.
+void keymove(); // 움직임포함 모든 명령키 입력받고 실행하는 함수.
+void undo_scan(); // undo를 실행하기위해 이전의 움직임을 저장하는 함수.
+void undo_do(); // u를 눌렀을 때 undo를 실행하는 함수.
+void file_save(); // s를 눌렀을 때 save를 하는 함수.
+void file_load(); // f를 눌렀을 때 file load를 하는 함수.
+
+void stage_check_cheking();// 게임 시작시 $의 개수와 O의 개수가 일치하지 않으면 종료하는 함수.
+void stage_check_nextstage(); // next_stage로 넘어가기 위한 조건을 실시간으로 찾는 함수.
+void search_hole(); // 보관함이 사라졌을 때 재출력 하는 함수.
+void end(); // 게임 끝났을 때 함수.
 
 //void rank();
 //void load_rank();
 
+int stage_clear = 0;
+int u=0; //undo 횟수를 기록하기위해 사용하는 변수. keymove의 'u'에서 사용하기위해 전역변수.
+int a=0; //움직임 하나에 a++; ( next_stage에서 undo 바로사용 방지. )
 int replay_check = 0; //0은 시작 x , 1은 시작 o
 char undo_memory[5][N][N];
 char map_memory[5][N][N];
@@ -29,6 +43,7 @@ int x=0, y=0, z=0, i;
 time_t start_time, end_time;
 double d_diff_stop=0;
 char key; // r,n,e 포함 나머지 입력 값들도 이 key변수로 받을 것.
+
 
 //이름 입력받는 함수
 void get_name()
@@ -74,7 +89,7 @@ int mapscan()
 {
 	FILE *scan;
 	char a;
-	scan=fopen("q.txt","r");
+	scan=fopen("map.txt","r");
 	while(fscanf(scan,"%c",&a) != EOF){
 		if(y==N){
 			y=0;
@@ -126,10 +141,9 @@ void undo_scan()
 		}
 }
 
-//undo 프린트.
+//undo 메모리 옮기기.
 void undo_do()
 {
-	int u = 0;
 
 	if(u==5)
 	return;
@@ -152,7 +166,8 @@ void mapprint()
 	int x,y;
 	printf("Hello %s", name);
 	printf("\n\n");
-	printf("map%d\n",z+1);
+	if(z<6)
+	printf("map %d\n",z+1);
 	for(int y=0;y<N;y++){
 		for(int x=0;x<N;x++)
 			printf("%c",map[z][y][x]);
@@ -195,6 +210,8 @@ void keyMove()
 
 		case 'u':
 
+			//a는 움직인 횟수.(맵별로 초기화) , u은 언두 횟수.
+			if(a>u)
 			undo_do();
 			break;
 
@@ -256,7 +273,7 @@ void keyMove()
 		for(int c=0; c<5; c++)
 			for(int b=0; b<N; b++)
 				for(int a=0; a<N; a++)
-					map[c][b][a] = map_memory[c][b][a];
+					map[c][b][a] = map_memory[0][b][a];
 
 		mapprint();
 		time(&start_time);
@@ -304,7 +321,7 @@ void keyMove()
 		printf("f(file load) \n");
 		printf("d(display help) \n");
 		printf("t(top) \n");
-		printf(" \n ※※※뒤로 가려면 q를 누르세요※※※ ");
+		printf(" \n ※※※뒤로 가려면 d 혹은 q를 눌러주세요※※※ \n\n");
 
 		int key2;
 		scanchar();
@@ -336,6 +353,7 @@ void keyMove()
 				map[z][y][x]=' ';
 				map[z][y][x-=1]='@';
 			}
+			a++;
 			break;
 
 		case 'j':
@@ -360,6 +378,7 @@ void keyMove()
 				map[z][y][x]=' ';
 				map[z][y+=1][x]='@';
 			}
+			a++;
 			break;
 
 		case 'k':
@@ -384,6 +403,7 @@ void keyMove()
 				map[z][y][x]=' ';
 				map[z][y-=1][x]='@';
 			}
+			a++;
 			break;
 
 		case 'l':
@@ -408,6 +428,7 @@ void keyMove()
 				map[z][y][x]=' ';
 				map[z][y][x+=1]='@';
 			}
+			a++;
 			break;
 	}
 }
@@ -467,7 +488,7 @@ void file_load() //game_file_load로 변경
 	fscanf(record_load,"%s",name);
 	fscanf(record_load,"%c",&tmp);
 
-	fscanf(record_load,"%f",&d_diff_stop);
+	fscanf(record_load,"%.1f",&d_diff_stop);
 	fscanf(record_load,"%c",&tmp);
 
 	fscanf(record_load,"map%d",&z);
@@ -480,11 +501,11 @@ void file_load() //game_file_load로 변경
 
 	fclose(record_load);
 
-	stage_check();
+	stage_check_nextstage();
 	search_hole();
 }
 
-int memory() //초기 맵 상태 저장
+int mapmemory() //초기 맵 상태 저장
 {
 	if (replay_check == 0){
 	for(int z=0; z<5; z++ )
@@ -495,44 +516,6 @@ int memory() //초기 맵 상태 저장
 
 }
 
-//////main 함수.
-int main(void)
-{
-	get_name();
-	mapscan();
-	//mapprint();
-	//scanchar();
-	time(&start_time);
-	//search_hole();
-	memory();
-	while(1){
-		replay_check = 1 ; //움직임을 입력.
-		mapprint();
-		keyMove();
-
-
-		search_hole();
-		stage_check();
-		//if (보관함 개수 == 0)
-		//while(1) keyMove()
-
-		//~반복
-	}
-	time(&end_time);
-	//double difftime(end_time, start_time);
-	double d_diff = d_diff_stop + difftime(end_time, start_time);
-	//rank()
-	end();
-	return 0;
-}
-
-//sokobar 678행 참고.
-//undo_scan , undo_print -> 옵션 r과 n 모두 할 수 있을듯?
-//undo로 !!!처음 맵을 저장!!!해놓는다면 원래 O위치에 아무것도 없을 때 다시 O가능?
-//e
-//keymove(hjkl) 보관함 사라지는 문제
-//save, load
-//ranking -> 옵션 t
 
 //구멍 메우는 함수
 void search_hole()
@@ -547,7 +530,7 @@ void search_hole()
 }
 
 //stage완료 조건을 확인하는 함수
-void stage_check()
+void stage_check_nextstage()
 {
 	int i=0;//필요개수 충족위해 필요 변수
 	int o=0;//맵별 똥그라미 개수
@@ -565,10 +548,38 @@ void stage_check()
 				 i++;
 			}
 		if(i==o){
+			if(z<4)
 			z++;
+			a++;
+			stage_clear++;
 		}
-				//next_stage();//이자리에 next stage만들어서 다음으로.
 }
+
+
+//게임 시작시 $의 개수와 O의 개수가 일치하지 않으면 종료하는 함수.
+void stage_check_cheking()
+{
+	int o=0;
+	int m=0;
+
+	for(int y=0; y<N; y++)
+		for(int x=0; x<N; x++)
+		if(map[z][y][x]=='O')
+		o++;
+
+	for(int y=0; y<N; y++)
+		for(int x=0; x<N; x++)
+		if(map[z][y][x]=='$')
+		m++;
+
+	if(m!=o)
+	{
+	 printf("Error : map파일의 $와 O 개수가 동일하지 않습니다.\n");
+	 printf("프로그램을 종료합니다.");
+	 exit(-1);
+ 	}
+}
+
 
 //끝나는 함수.
 void end()
@@ -576,6 +587,44 @@ void end()
 	system("clear");
 
 	printf("\n\n");
-	printf("SEE YOU %s. . . .",name);
+	printf("축하드립니다 %s님 모든 스테이지를 클리어 하셨습니다.",name);
 	printf("\n");
+}
+
+
+
+
+
+//////main 함수.
+int main(void)
+{
+	mapscan();
+	stage_check_cheking();
+	get_name();
+
+	time(&start_time);
+
+	mapmemory();
+
+	while(1){
+		replay_check = 1 ; //움직임을 입력.
+
+		mapprint();
+		keyMove();
+
+		search_hole();
+		stage_check_nextstage();
+
+		if(stage_clear == 5)
+		break;
+	}
+	time(&end_time);
+	double d_diff = d_diff_stop + difftime(end_time, start_time);
+
+	//rank()
+
+	end();
+	printf("클리어에 걸린 시간 : %.1fsec",d_diff);
+	printf("\n\n");
+	return 0;
 }
